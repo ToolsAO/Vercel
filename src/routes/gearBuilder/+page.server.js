@@ -9,5 +9,5 @@ export async function load({ fetch, setHeaders }) {
 		'cache-control': response.headers.get('cache-control')
 	});
 
-	return response;
+	return response.json();
 }
