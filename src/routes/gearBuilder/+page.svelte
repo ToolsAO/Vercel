@@ -14,6 +14,10 @@
 	import BuildsSaveButton from '$lib/components/gearBuilder/BuildsSaveButton.svelte';
 	import BuildsLoadButton from '$lib/components/gearBuilder/BuildsLoadButton.svelte';
 
+	export let data;
+
+	console.log(data["number"]);
+
 	//Load using hash.
 	function loadHash() {
 		loadCode(window.location.hash.substring(1));
