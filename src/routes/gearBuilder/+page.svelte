@@ -16,7 +16,7 @@
 
 	export let data;
 
-	console.log(data["number"]);
+	console.log(data);
 
 	//Load using hash.
 	function loadHash() {
