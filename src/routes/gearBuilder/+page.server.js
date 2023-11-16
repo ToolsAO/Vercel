@@ -1,12 +1,13 @@
-async function fetchText(url) {
-    let response = await fetch(url);
-    let responseText = await response.text();
+export async function load({ fetch, setHeaders }) {
+    const url = "https://toolsao.vercel.app/api/test";
+	const response = await fetch(url);
 
-    return responseText;
-}
+	// cache the page for the same length of time
+	// as the underlying data
+	setHeaders({
+		age: response.headers.get('age'),
+		'cache-control': response.headers.get('cache-control')
+	});
 
-export async function load() {
-	return {
-		number: await fetchText("https://toolsao.vercel.app/api/test")
-	};
+	return response.json();
 }
