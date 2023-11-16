@@ -1,5 +1,5 @@
 export function load() {
 	return {
-		number: Math.random()
+		number: await fetch("https://toolsao.vercel.app/api/test").text()
 	};
 }
