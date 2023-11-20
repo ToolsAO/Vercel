@@ -1,11 +1,14 @@
 import GIFEncoder from 'gif-encoder-2/src/GIFEncoder'
-import { createCanvas, loadImage } from '@napi-rs/canvas'
+import { createCanvas, loadImage, GlobalFonts } from '@napi-rs/canvas'
 
 
 export async function GET({ setHeaders, params, url }) {
     let data = decodeURI(url.searchParams.get('data'));
 
     console.log(data);
+    for (let font of GlobalFonts.families) {
+        console.log(font["family"]);
+    }
     
     function getImage(imageurl) {
         return loadImage(imageurl).catch((e) => {console.error(e.message+" "+imageurl);});
@@ -351,13 +354,13 @@ export async function GET({ setHeaders, params, url }) {
 
     // draw stats title
     bgctx.fillStyle = '#FFFFFF';
-    bgctx.font = '50px "Open Sans", sans-serif';
+    bgctx.font = '50px Calibri';
     bgctx.fillText("Stats", 550, 60);
 
     for (const [index, [statKey, stat]] of Object.entries(Object.entries(stats))) {
         // draw stats text
-        bgctx.font = '35px "Open Sans", sans-serif';
-        bgctx.fillText("+ "+(100).toString()+" "+statKey, 460, 100+((index)*50));
+        bgctx.font = '35px Calibri';
+        bgctx.fillText("+ "+(100).toString()+" "+statKey.toUpperCase(), 460, 100+((index)*50));
         let statimage = await images["stat"][statKey];
         bgctx.drawImage(statimage, 400, 100+(index*50), (statimage.width/statimage.height)*50, 50);
     }
