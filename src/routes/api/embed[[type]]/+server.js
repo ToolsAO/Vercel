@@ -412,9 +412,9 @@ export async function GET({ setHeaders, params, url }) {
     
     const buffer = encoder.out.getData()
 
-    setHeaders({
+    /*setHeaders({
         'Content-Type': "image/gif"
-    });
+    });*/
     return new Response(buffer);
 }
 
