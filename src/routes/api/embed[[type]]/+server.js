@@ -356,12 +356,12 @@ export async function GET({ setHeaders, params, url }) {
 
     // draw stats title
     bgctx.fillStyle = '#FFFFFF';
-    bgctx.font = '50px Calibri';
+    bgctx.font = '40px Calibri';
     bgctx.fillText("Stats", 550, 60);
 
     for (const [index, [statKey, stat]] of Object.entries(Object.entries(stats))) {
         // draw stats text
-        bgctx.font = '35px Calibri';
+        bgctx.font = '30px Calibri';
         bgctx.fillText("+ "+(100).toString()+" "+statKey.toUpperCase(), 460, 100+((index)*50));
         let statimage = await images["stat"][statKey];
         bgctx.drawImage(statimage, 400, 100+(index*50), (statimage.width/statimage.height)*50, 50);
