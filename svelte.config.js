@@ -12,7 +12,6 @@ const config = {
 			$db: './src/db',
 		}
 	}
-	runtime: 'nodejs20.x'
 };
 
 export default config;
