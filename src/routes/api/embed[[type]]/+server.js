@@ -369,6 +369,7 @@ export async function GET({ setHeaders, params, url }) {
     const encoder = new GIFEncoder(width, height)
     encoder.setDelay(1000)
     encoder.start()
+    encoder.setTransparent(false);
 
 
     for (const [categoryKey, category] of Object.entries(data)) {
