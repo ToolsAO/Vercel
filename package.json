@@ -33,6 +33,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@napi-rs/canvas": "^0.1.44",
 		"@sveltejs/adapter-vercel": "^3.0.3",
 		"canvas": "^2.11.2",
 		"gif-encoder-2": "^1.0.5",
