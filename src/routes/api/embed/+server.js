@@ -350,10 +350,12 @@ export async function GET({ setHeaders, params, url }) {
     bgctx.stroke();
 
     // draw stats title
+    bgctx.fillStyle = '#FFFFFF';
+    bgctx.font = '50px "Open Sans", sans-serif';
+    bgctx.fillText("Stats", 550, 60);
 
     for (const [index, [statKey, stat]] of Object.entries(Object.entries(stats))) {
         // draw stats text
-        bgctx.fillStyle = '#FFFFFF';
         bgctx.font = '35px "Open Sans", sans-serif';
         bgctx.fillText("+ "+(100).toString()+" "+statKey, 460, 100+((index)*50));
         let statimage = await images["stat"][statKey];
