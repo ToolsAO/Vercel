@@ -1,5 +1,5 @@
 import GIFEncoder from 'gif-encoder-2/src/GIFEncoder'
-import { createCanvas, loadImage } from '@napi-rs/canvas'
+import { createCanvas, loadImage } from 'canvas'
 
 
 export async function GET({ setHeaders, params, url }) {
