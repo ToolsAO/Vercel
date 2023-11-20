@@ -1,14 +1,16 @@
 import GIFEncoder from 'gif-encoder-2/src/GIFEncoder'
-import { createCanvas, loadImage, GlobalFonts } from '@napi-rs/canvas'
+import { createCanvas, loadImage } from 'canvas'
 
 
 export async function GET({ setHeaders, params, url }) {
     let data = decodeURI(url.searchParams.get('data'));
 
     console.log(data);
+    /*
     for (let font of GlobalFonts.families) {
         console.log(font["family"]);
     }
+    */
     
     function getImage(imageurl) {
         return loadImage(imageurl).catch((e) => {console.error(e.message+" "+imageurl);});

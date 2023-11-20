@@ -17,6 +17,14 @@ export async function load({ fetch, setHeaders }) {
 export const actions = {
 	create: async ({ request }) => {
 		const data = await request.formData();
-        await items.insertOne({"name":data.get('name')});
+        await items.insertOne({"name":data.get('name'), "id":data.get('id'), "legend":data.get('legend')});
+	},
+	update: async ({ request }) => {
+		const data = await request.formData();
+		await items.updateOne({"name":data.get('name')}, { $set: { "id" : data.get('id'), "legend" : data.get('legend') } })
+	},
+	delete: async ({ request }) => {
+		const data = await request.formData();
+		await items.deleteOne({"name":data.get("name")});
 	}
 };
