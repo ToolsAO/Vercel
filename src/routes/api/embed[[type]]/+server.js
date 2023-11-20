@@ -339,8 +339,8 @@ export async function GET({ setHeaders, params, url }) {
     
     console.log(images);
 
-    let canvas = createCanvas(width, height)
-    let ctx = canvas.getContext('2d')
+    const canvas = createCanvas(width, height)
+    const ctx = canvas.getContext('2d')
 
 
     const bgCanvas = createCanvas(width, height);
@@ -366,15 +366,12 @@ export async function GET({ setHeaders, params, url }) {
     }
 
 
-    const encoder = new GIFEncoder(width, height)
+    const encoder = new GIFEncoder(width, height, 'octree', true, 5)
     encoder.setDelay(1000)
     encoder.start()
-    encoder.setTransparent(false);
 
 
     for (const [categoryKey, category] of Object.entries(data)) {
-        canvas = createCanvas(width, height)
-        ctx = canvas.getContext('2d')
         ctx.drawImage(bgCanvas, 0, 0);
 
         // draw name
@@ -406,10 +403,12 @@ export async function GET({ setHeaders, params, url }) {
     ctx.fillRect(100, 100, 100, 100)
     encoder.addFrame(ctx)
     
+    /*
     ctx.drawImage(bgCanvas, 0, 0);
     ctx.fillStyle = '#ffff00'
     ctx.fillRect(0, 100, 100, 100)
     encoder.addFrame(ctx)
+    */
     
     encoder.finish()
     
