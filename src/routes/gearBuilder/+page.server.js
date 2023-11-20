@@ -1,13 +1,14 @@
+import { main } from '$db/main.js';
+
 export async function load({ fetch, setHeaders }) {
-    const url = "https://toolsao.vercel.app/api/test";
-	const response = await fetch(url);
 
-	// cache the page for the same length of time
-	// as the underlying data
-	setHeaders({
-		age: response.headers.get('age'),
-		'cache-control': response.headers.get('cache-control')
-	});
+    const data = await main.findOne({test:"test"}, {projection: {
+		_id: 0
+	}});
 
-	return response.json();
+    console.log(data);
+
+	return {
+		data: data
+	}
 }
