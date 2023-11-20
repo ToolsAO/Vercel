@@ -384,7 +384,6 @@ export async function GET({ setHeaders, params, url }) {
         ctx.drawImage(await images[category["modifier"]["mainType"].toLowerCase()][category["modifier"]["id"]], (100+parseInt((200/3)*2)), 450);
         
         encoder.addFrame(ctx)
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 
     
