@@ -373,6 +373,8 @@ export async function GET({ setHeaders, params, url }) {
 
 
     for (const [categoryKey, category] of Object.entries(data)) {
+        canvas = createCanvas(width, height)
+        ctx = canvas.getContext('2d')
         ctx.drawImage(bgCanvas, 0, 0);
 
         // draw name
