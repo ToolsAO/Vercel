@@ -339,8 +339,8 @@ export async function GET({ setHeaders, params, url }) {
     
     console.log(images);
 
-    const canvas = createCanvas(width, height)
-    const ctx = canvas.getContext('2d')
+    let canvas = createCanvas(width, height)
+    let ctx = canvas.getContext('2d')
 
 
     const bgCanvas = createCanvas(width, height);
