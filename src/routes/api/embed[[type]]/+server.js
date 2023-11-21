@@ -6,15 +6,83 @@ export async function GET({ setHeaders, params, url }) {
     let data = decodeURI(url.searchParams.get('data'));
 
     console.log(data);
-    /*
-    for (let font of GlobalFonts.families) {
-        console.log(font["family"]);
-    }
-    */
     
+
+    const width = 800
+    const height = 600
+
+    let stats = {
+        "power":{imageId:"https://tools.arcaneodyssey.net/assets/images/itemstat/power.png", "colors":{"fill":"#FF8400"}},
+        "defense":{imageId:"https://tools.arcaneodyssey.net/assets/images/itemstat/defense.png", "colors":{"fill":"#737373"}},
+        "agility":{imageId:"https://tools.arcaneodyssey.net/assets/images/itemstat/agility.png", "colors":{"fill":"#FFFFFF","stroke":"#00ffff"}},
+        "attackspeed":{imageId:"https://tools.arcaneodyssey.net/assets/images/itemstat/attackspeed.png", "colors":{"fill":"#FFFFFF","stroke":"#0077ff"}},
+        "attacksize":{imageId:"https://tools.arcaneodyssey.net/assets/images/itemstat/attacksize.png", "colors":{"fill":"#00FF00","stroke":"#471559"}},
+        "intensity":{imageId:"https://tools.arcaneodyssey.net/assets/images/itemstat/intensity.png", "colors":{"fill":"#FFF200","stroke":"#712402"}},
+        "insanity":{imageId:"https://tools.arcaneodyssey.net/assets/images/itemstat/insanity.png", "colors":{"fill":"#8B27DB","stroke":"#DB0C45"}},
+        "drawback":{imageId:"https://tools.arcaneodyssey.net/assets/images/itemstat/drawback.png", "colors":{"fill":"#DC4040"}},
+        "warding":{imageId:"https://tools.arcaneodyssey.net/assets/images/itemstat/warding.png", "colors":{"fill":"#FFFFFF","stroke":"#CBCB55"}}
+    }
+
+
+    let images = {
+        "accessory":{},
+        "chestplate":{},
+        "pants":{},
+        "gem":{},
+        "enchant":{},
+        "modifier":{},
+        "stat":{}
+    }
+
+
     function getImage(imageurl) {
         return loadImage(imageurl).catch((e) => {console.error(e.message+" "+imageurl);});
     }
+
+    function getTextSize(ctx, text, fontface, box) {
+
+        const getHeight = (measure) => measure.fontBoundingBoxAscent + measure.fontBoundingBoxDescent;
+
+        var fontsize = 100;
+        ctx.font = fontsize + "px " + fontface
+
+        while ((ctx.measureText(text).width > box[2] - box[0] || getHeight(bgctx.measureText(text)) > box[3] - box[1]) && fontsize > 1){
+            fontsize--;
+            ctx.font = fontsize + "px " + fontface;
+        }
+
+        return fontsize;
+    }
+
+    function drawTextFit(ctx, text, fontface, box, widthcenter=null, heightcenter=null, overrideFontSize=null) {
+
+        const getHeight = (measure) => measure.fontBoundingBoxAscent + measure.fontBoundingBoxDescent;
+
+        var fontsize = 100;
+        ctx.font = fontsize + "px " + fontface
+
+        while ((ctx.measureText(text).width > box[2] - box[0] || getHeight(bgctx.measureText(text)) > box[3] - box[1]) && fontsize > 1 && overrideFontSize == null){
+            fontsize--;
+            ctx.font = fontsize + "px " + fontface;
+        }
+
+        if (overrideFontSize != null) {
+            fontsize = overrideFontSize;
+            ctx.font = fontsize + "px " + fontface;
+        }
+
+        if (widthcenter) {
+            box[0] = box[0]+(((box[2] - box[0])-ctx.measureText(text).width)/2);
+            box[1] = box[3]-getHeight(bgctx.measureText(text));
+        }
+        if (heightcenter) {
+            box[1] = box[1]+(((box[3] - box[1])-getHeight(bgctx.measureText(text)))/2);
+        }
+        
+        ctx.fillText(text, box[0], box[1]+getHeight(bgctx.measureText(text)));
+        ctx.strokeText(text, box[0], box[1]+getHeight(bgctx.measureText(text)));
+    }
+
 
     data = {
         accessory1: {
@@ -302,31 +370,7 @@ export async function GET({ setHeaders, params, url }) {
 		}*/
     }
 
-    const width = 800
-    const height = 600
-
-    let stats = {
-        "power":{imageId:"https://tools.arcaneodyssey.net/assets/images/itemstat/power.png"},
-        "defense":{imageId:"https://tools.arcaneodyssey.net/assets/images/itemstat/defense.png"},
-        "agility":{imageId:"https://tools.arcaneodyssey.net/assets/images/itemstat/agility.png"},
-        "attackspeed":{imageId:"https://tools.arcaneodyssey.net/assets/images/itemstat/attackspeed.png"},
-        "attacksize":{imageId:"https://tools.arcaneodyssey.net/assets/images/itemstat/attacksize.png"},
-        "intensity":{imageId:"https://tools.arcaneodyssey.net/assets/images/itemstat/intensity.png"},
-        "insanity":{imageId:"https://tools.arcaneodyssey.net/assets/images/itemstat/insanity.png"},
-        "drawback":{imageId:"https://tools.arcaneodyssey.net/assets/images/itemstat/drawback.png"},
-        "warding":{imageId:"https://tools.arcaneodyssey.net/assets/images/itemstat/warding.png"}
-    }
-
-
-    let images = {
-        "accessory":{},
-        "chestplate":{},
-        "pants":{},
-        "gem":{},
-        "enchant":{},
-        "modifier":{},
-        "stat":{}
-    }
+    
 
     // loop though and download images
     for (const [categoryKey, category] of Object.entries(data)) {
@@ -354,15 +398,28 @@ export async function GET({ setHeaders, params, url }) {
     bgctx.rect(400, 10, 390, 580);
     bgctx.stroke();
 
-    // draw stats title
     bgctx.fillStyle = '#FFFFFF';
-    bgctx.font = '40px Calibri';
-    bgctx.fillText("Stats", 550, 60);
+    drawTextFit(bgctx, "Stats", "Calibri", [400, 20, 790, 70], true, true);
+
+    let statFontSize = 100;
+    for (const [index, [statKey, stat]] of Object.entries(Object.entries(stats))) {
+
+        let tempsize = getTextSize(bgctx, "+ "+(100).toString()+" "+statKey.toUpperCase(), "Calibri", [460, 100+((index)*50), 780, 100+((index)*50)+50]);
+        if (tempsize < statFontSize) {
+            statFontSize = tempsize;
+        }
+    }
 
     for (const [index, [statKey, stat]] of Object.entries(Object.entries(stats))) {
-        // draw stats text
-        bgctx.font = '30px Calibri';
-        bgctx.fillText("+ "+(100).toString()+" "+statKey.toUpperCase(), 460, 100+((index)*50));
+        if ("fill" in stats[statKey]["colors"]) {
+            bgctx.fillStyle = stats[statKey]["colors"]["fill"];
+        }
+        if ("stroke" in stats[statKey]["colors"]) {
+            bgctx.strokeStyle = stats[statKey]["colors"]["stroke"];
+        } else if ("fill" in stats[statKey]["colors"]) {
+            bgctx.strokeStyle = stats[statKey]["colors"]["fill"];
+        }
+        drawTextFit(bgctx, "+ "+(100).toString()+" "+statKey.toUpperCase(), "Calibri", [460, 100+((index)*50), 780, 100+((index)*50)+50], false, true, statFontSize);
         let statimage = await images["stat"][statKey];
         bgctx.drawImage(statimage, 400, 100+(index*50), (statimage.width/statimage.height)*50, 50);
     }
@@ -373,10 +430,13 @@ export async function GET({ setHeaders, params, url }) {
     encoder.start()
 
 
+    ctx.fillStyle = '#FFFFFF';
     for (const [categoryKey, category] of Object.entries(data)) {
         ctx.drawImage(bgCanvas, 0, 0);
 
         // draw name
+        ctx.fillStyle = category["base"]["rarityColor"];
+        drawTextFit(ctx, category["base"]["name"], "Calibri", [10, 10, 390, 100], false, true);
 
         ctx.drawImage(await images[category["base"]["mainType"].toLowerCase()][category["base"]["id"]], 150, 150);
         for (let i = 0; i < category["base"]["gemNo"]; i++) {
@@ -385,7 +445,7 @@ export async function GET({ setHeaders, params, url }) {
         ctx.drawImage(await images[category["enchant"]["mainType"].toLowerCase()][category["enchant"]["id"]], parseInt(200/3), 450);
         ctx.drawImage(await images[category["modifier"]["mainType"].toLowerCase()][category["modifier"]["id"]], (100+parseInt((200/3)*2)), 450);
         
-        encoder.addFrame(ctx)
+        encoder.addFrame(ctx);
     }
 
     
