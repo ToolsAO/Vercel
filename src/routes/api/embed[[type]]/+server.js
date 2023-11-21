@@ -4,7 +4,6 @@ import { createCanvas, loadImage } from '@napi-rs/canvas'
 
 export async function GET({ setHeaders, params, url }) {
     let data = decodeURI(url.searchParams.get('data'));
-    let test = decodeURI(url.searchParams.get('test'));
 
     console.log(data);
     
@@ -452,7 +451,7 @@ export async function GET({ setHeaders, params, url }) {
     
     ctx.drawImage(bgCanvas, 0, 0);
     ctx.fillStyle = '#FFFFFF'
-    drawTextFit(ctx, test, "Calibri", [10, 10, 390, 100], true, true);
+    drawTextFit(ctx, data, "Calibri", [10, 10, 390, 100], true, true);
     //ctx.drawImage(await images["item"], 0, 0)
     encoder.addFrame(ctx)
     
