@@ -5,7 +5,8 @@ import {
 	pantsTemplate,
 	gemTemplate,
 	enchantTemplate,
-	modifierTemplate
+	modifierTemplate,
+	statTemplate
 } from './statTemplate';
 import {
 	getAccessoryById,
@@ -52,42 +53,134 @@ export const pants1Gem3 = writable(gemTemplate);
 export const pants1Enchant = writable(enchantTemplate);
 export const pants1Modifier = writable(modifierTemplate);
 
+export function getCurrentGearSet() {
+	const currentGearSet = {
+		accessory1: {
+			base: accessory1,
+			gem1: accessory1Gem1,
+			gem2: accessory1Gem2,
+			gem3: accessory1Gem3,
+			enchant: accessory1Enchant,
+			modifier: accessory1Modifier
+		},
+		accessory2: {
+			base: accessory2,
+			gem1: accessory2Gem1,
+			gem2: accessory2Gem2,
+			gem3: accessory2Gem3,
+			enchant: accessory2Enchant,
+			modifier: accessory2Modifier
+		},
+		accessory3: {
+			base: accessory3,
+			gem1: accessory3Gem1,
+			gem2: accessory3Gem2,
+			gem3: accessory3Gem3,
+			enchant: accessory3Enchant,
+			modifier: accessory3Modifier
+		},
+		chestplate1: {
+			base: chestplate1,
+			gem1: chestplate1Gem1,
+			gem2: chestplate1Gem2,
+			gem3: chestplate1Gem3,
+			enchant: chestplate1Enchant,
+			modifier: chestplate1Modifier
+		},
+		pants1: {
+			base: pants1,
+			gem1: pants1Gem1,
+			gem2: pants1Gem2,
+			gem3: pants1Gem3,
+			enchant: pants1Enchant,
+			modifier: pants1Modifier
+		}
+	};
+	return currentGearSet;
+}
 // Function to reset all stores
 export function resetAllStores() {
-	accessory1.set(accessoryTemplate);
-	accessory1Gem1.set(gemTemplate);
-	accessory1Gem2.set(gemTemplate);
-	accessory1Gem3.set(gemTemplate);
-	accessory1Enchant.set(enchantTemplate);
-	accessory1Modifier.set(modifierTemplate);
+	const gears = getCurrentGearSet();
 
-	accessory2.set(accessoryTemplate);
-	accessory2Gem1.set(gemTemplate);
-	accessory2Gem2.set(gemTemplate);
-	accessory2Gem3.set(gemTemplate);
-	accessory2Enchant.set(enchantTemplate);
-	accessory2Modifier.set(modifierTemplate);
+	for (const category in gears) {
+		switch (true) {
+			case category.startsWith('accessory') == true:
+				gears[category].base.set(accessoryTemplate);
+				break;
+			case category.startsWith('chestplate') == true:
+				gears[category].base.set(chestplateTemplate);
+				break;
+			case category.startsWith('pants') == true:
+				gears[category].base.set(pantsTemplate);
+				break;
+			default:
+				break;
+		}
+		gears[category].gem1.set(gemTemplate);
+		gears[category].gem2.set(gemTemplate);
+		gears[category].gem3.set(gemTemplate);
+		gears[category].enchant.set(enchantTemplate);
+		gears[category].modifier.set(modifierTemplate);
+	}
+}
 
-	accessory3.set(accessoryTemplate);
-	accessory3Gem1.set(gemTemplate);
-	accessory3Gem2.set(gemTemplate);
-	accessory3Gem3.set(gemTemplate);
-	accessory3Enchant.set(enchantTemplate);
-	accessory3Modifier.set(modifierTemplate);
+export function patchBuildCode(inputString) {
+	//Prevent url loading code modifications
 
-	chestplate1.set(chestplateTemplate);
-	chestplate1Gem1.set(gemTemplate);
-	chestplate1Gem2.set(gemTemplate);
-	chestplate1Gem3.set(gemTemplate);
-	chestplate1Enchant.set(enchantTemplate);
-	chestplate1Modifier.set(modifierTemplate);
+	const rows = inputString.split("'");
+	const modifiedRows = [];
 
-	pants1.set(pantsTemplate);
-	pants1Gem1.set(gemTemplate);
-	pants1Gem2.set(gemTemplate);
-	pants1Gem3.set(gemTemplate);
-	pants1Enchant.set(enchantTemplate);
-	pants1Modifier.set(modifierTemplate);
+	let index = 0;
+	const noDupeSubTypes = ['Amulet', 'Helmet'];
+	let accessories = []; // Set up to test for dupe accessories
+	for (const row of rows) {
+		const currentRow = row.split('.');
+
+		let currentGear = statTemplate;
+		if (index <= 2) {
+			currentGear = getAccessoryById(parseInt(currentRow[0]));
+
+			if (
+				accessories.includes(currentGear) || //Patch duplicate accessories
+				(noDupeSubTypes.includes(currentGear.subType) &&
+					accessories.some((accessory) => accessory.subType === currentGear.subType)) // Patch duplicate subType
+			) {
+				currentGear = getAccessoryById(0);
+				currentRow[0] = '0';
+			}
+
+			accessories.push(currentGear);
+		} else if (index == 3) {
+			currentGear = getChestplateById(parseInt(currentRow[0]));
+		} else if (index > 3) {
+			currentGear = getPantsById(parseInt(currentRow[0]));
+		}
+
+		//Fix atlantean virtuous incompatibility
+		if (currentRow[4] == '15' && currentRow[5] == '1') {
+			currentRow[4] = '0';
+			currentRow[5] = '0';
+		}
+
+		//Extra gems fix
+		let gemCount = [];
+		for (let i = 1; i <= 3; i++) {
+			if (parseInt(currentRow[i]) > 0) {
+				gemCount.push(true);
+			}
+		}
+
+		if (gemCount.length > currentGear.gemNo) {
+			for (let i = 3; i >= currentGear.gemNo + 1; i--) {
+				currentRow[i] = '0';
+			}
+		}
+
+		modifiedRows.push(currentRow.join('.'));
+		index += 1;
+	}
+
+	return modifiedRows;
 }
 
 export function loadCode(inputString) {
@@ -106,69 +199,34 @@ export function loadCode(inputString) {
 
 		if (inputString.length >= 59) {
 			// Parse the input string
-			const rows = inputString.split("'");
-			const accessory1Row = rows[0].split('.');
-			const accessory2Row = rows[1].split('.');
-			const accessory3Row = rows[2].split('.');
-			const chestplate1Row = rows[3].split('.');
-			const pants1Row = rows[4].split('.');
 
-			//Patch for new atlantean virtuous changes.
-			if (accessory1Row[4] == '15' && accessory1Row[5] == '1') {
-				accessory1Row[4] = '0';
-				accessory1Row[5] = '0';
+			const rows = patchBuildCode(inputString);
+			const gears = getCurrentGearSet();
+
+			let index = 0;
+			for (const category in gears) {
+				const currentRow = rows[index].split('.');
+
+				switch (true) {
+					case category.startsWith('accessory') == true:
+						gears[category].base.set(getAccessoryById(parseInt(currentRow[0])));
+						break;
+					case category.startsWith('chestplate') == true:
+						gears[category].base.set(getChestplateById(parseInt(currentRow[0])));
+						break;
+					case category.startsWith('pants') == true:
+						gears[category].base.set(getPantsById(parseInt(currentRow[0])));
+						break;
+					default:
+						break;
+				}
+				gears[category].gem1.set(getGemById(parseInt(currentRow[1])));
+				gears[category].gem2.set(getGemById(parseInt(currentRow[2])));
+				gears[category].gem3.set(getGemById(parseInt(currentRow[3])));
+				gears[category].enchant.set(getEnchantById(parseInt(currentRow[4])));
+				gears[category].modifier.set(getModifierById(parseInt(currentRow[5])));
+				index += 1;
 			}
-			if (accessory2Row[4] == '15' && accessory2Row[5] == '1') {
-				accessory2Row[4] = '0';
-				accessory2Row[5] = '0';
-			}
-			if (accessory3Row[4] == '15' && accessory3Row[5] == '1') {
-				accessory3Row[4] = '0';
-				accessory3Row[5] = '0';
-			}
-			if (chestplate1Row[4] == '15' && chestplate1Row[5] == '1') {
-				chestplate1Row[4] = '0';
-				chestplate1Row[5] = '0';
-			}
-			if (pants1Row[4] == '15' && pants1Row[5] == '1') {
-				pants1Row[4] = '0';
-				pants1Row[5] = '0';
-			}
-
-			accessory1.set(getAccessoryById(parseInt(accessory1Row[0])));
-			accessory1Gem1.set(getGemById(parseInt(accessory1Row[1])));
-			accessory1Gem2.set(getGemById(parseInt(accessory1Row[2])));
-			accessory1Gem3.set(getGemById(parseInt(accessory1Row[3])));
-			accessory1Enchant.set(getEnchantById(parseInt(accessory1Row[4])));
-			accessory1Modifier.set(getModifierById(parseInt(accessory1Row[5])));
-
-			accessory2.set(getAccessoryById(parseInt(accessory2Row[0])));
-			accessory2Gem1.set(getGemById(parseInt(accessory2Row[1])));
-			accessory2Gem2.set(getGemById(parseInt(accessory2Row[2])));
-			accessory2Gem3.set(getGemById(parseInt(accessory2Row[3])));
-			accessory2Enchant.set(getEnchantById(parseInt(accessory2Row[4])));
-			accessory2Modifier.set(getModifierById(parseInt(accessory2Row[5])));
-
-			accessory3.set(getAccessoryById(parseInt(accessory3Row[0])));
-			accessory3Gem1.set(getGemById(parseInt(accessory3Row[1])));
-			accessory3Gem2.set(getGemById(parseInt(accessory3Row[2])));
-			accessory3Gem3.set(getGemById(parseInt(accessory3Row[3])));
-			accessory3Enchant.set(getEnchantById(parseInt(accessory3Row[4])));
-			accessory3Modifier.set(getModifierById(parseInt(accessory3Row[5])));
-
-			chestplate1.set(getChestplateById(parseInt(chestplate1Row[0])));
-			chestplate1Gem1.set(getGemById(parseInt(chestplate1Row[1])));
-			chestplate1Gem2.set(getGemById(parseInt(chestplate1Row[2])));
-			chestplate1Gem3.set(getGemById(parseInt(chestplate1Row[3])));
-			chestplate1Enchant.set(getEnchantById(parseInt(chestplate1Row[4])));
-			chestplate1Modifier.set(getModifierById(parseInt(chestplate1Row[5])));
-
-			pants1.set(getPantsById(parseInt(pants1Row[0])));
-			pants1Gem1.set(getGemById(parseInt(pants1Row[1])));
-			pants1Gem2.set(getGemById(parseInt(pants1Row[2])));
-			pants1Gem3.set(getGemById(parseInt(pants1Row[3])));
-			pants1Enchant.set(getEnchantById(parseInt(pants1Row[4])));
-			pants1Modifier.set(getModifierById(parseInt(pants1Row[5])));
 			storeCurrentBuild();
 			return true;
 		} else {
@@ -188,68 +246,26 @@ export function generateCode() {
 	return: code generated
 
 	*/
-	let code =
-		get(accessory1).id +
-		'.' +
-		get(accessory1Gem1).id +
-		'.' +
-		get(accessory1Gem2).id +
-		'.' +
-		get(accessory1Gem3).id +
-		'.' +
-		get(accessory1Enchant).id +
-		'.' +
-		get(accessory1Modifier).id +
-		"'" +
-		get(accessory2).id +
-		'.' +
-		get(accessory2Gem1).id +
-		'.' +
-		get(accessory2Gem2).id +
-		'.' +
-		get(accessory2Gem3).id +
-		'.' +
-		get(accessory2Enchant).id +
-		'.' +
-		get(accessory2Modifier).id +
-		"'" +
-		get(accessory3).id +
-		'.' +
-		get(accessory3Gem1).id +
-		'.' +
-		get(accessory3Gem2).id +
-		'.' +
-		get(accessory3Gem3).id +
-		'.' +
-		get(accessory3Enchant).id +
-		'.' +
-		get(accessory3Modifier).id +
-		"'" +
-		get(chestplate1).id +
-		'.' +
-		get(chestplate1Gem1).id +
-		'.' +
-		get(chestplate1Gem2).id +
-		'.' +
-		get(chestplate1Gem3).id +
-		'.' +
-		get(chestplate1Enchant).id +
-		'.' +
-		get(chestplate1Modifier).id +
-		"'" +
-		get(pants1).id +
-		'.' +
-		get(pants1Gem1).id +
-		'.' +
-		get(pants1Gem2).id +
-		'.' +
-		get(pants1Gem3).id +
-		'.' +
-		get(pants1Enchant).id +
-		'.' +
-		get(pants1Modifier).id;
 
-	// retirn code generated
+	const gears = getCurrentGearSet();
+
+	let rows = []; // Initialize temp array
+
+	for (const category in gears) {
+		const itemCategory = gears[category];
+		const sectionIds = []; // Initialize temporary array for the row
+
+		for (const section in itemCategory) {
+			sectionIds.push(get(itemCategory[section]).id); // Get id for each base / gem1 / gem2 / gem3 / enchant / modifier and add it to the sectionIds
+		}
+
+		rows.push(sectionIds.join('.')); // Join the ids together with a .
+	}
+
+	let code = rows.join("'"); //Join the rows together with a '
+	//The reason for using arrays and joining them was the old + ''' and + '.' method had extra . and ' at the end. This method removes the extra.
+
+	// return code generated
 	return code;
 }
 

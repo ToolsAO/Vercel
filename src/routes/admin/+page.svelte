@@ -1,5 +1,6 @@
 <script>
     import { enhance } from '$app/forms';
+	import ItemButton from '$lib/components/admin/ItemButton.svelte';
 
     export let data;
 
@@ -7,7 +8,9 @@
 </script>
 
 <div style="padding-top: 100px;">
-    {#each data.items as { name, id, legend }}
+	
+    <!--
+	{#each data.items as { name, id, legend }}
 		<div class="p-1">
 			<p style="display: inline;">Item:</p>
 			<form style="display: inline;" method="POST" action="?/update" use:enhance={() => {
@@ -15,7 +18,7 @@
 				update({ reset: false });
 				};
 			}}>
-				<input name="name" value={name} /> <input name="id" value={id} /> <input name="legend" value={legend} />
+				<input name="name" value={name} /> <input name="id" type="number" value={id} /> <input name="legend" value={legend} />
 				<input type="submit" value="Update">
 			</form>
 			<form style="display: inline;" method="POST" action="?/delete" use:enhance>
@@ -23,6 +26,10 @@
 				<button aria-label="Mark as complete" >Delete</button>
 			</form>
 		</div>
+	{/each}
+	-->
+	{#each data.items as item}
+		<ItemButton item={item} />
 	{/each}
 	<div class="pt-5 p-1">
 		<form method="POST" action="?/create" use:enhance>
