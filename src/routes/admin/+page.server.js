@@ -21,7 +21,7 @@ export const actions = {
 	},
 	update: async ({ request }) => {
 		const data = await request.formData();
-		await items.updateOne({"name":data.get('name')}, { $set: { "id" : parseInt(data.get('id')), "legend" : data.get('legend') } })
+		await items.updateOne({"$and":[{"id":parseInt(data.get('id'))}, {"mainType":data.get('previoustype')}]}, { $set: { "id" : parseInt(data.get('id')), "legend" : data.get('legend') } })
 	},
 	delete: async ({ request }) => {
 		const data = await request.formData();
