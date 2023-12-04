@@ -1,9 +1,14 @@
 <script>
     import { enhance } from '$app/forms';
+    import { onMount } from 'svelte';
 
-    export let item;
+    export let item, dropdowns;
 
     let open = false;
+
+    
+    let imageId = item["imageId"];
+    let mainType = item["mainType"];
 
 
     const handleToggle = () => {
@@ -70,23 +75,46 @@
                     </div>
                     <div>
                         <label for="mainType" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category</label>
-                        <input type="text" id="mainType" name="mainType" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Accessory" value={item["mainType"]} required>
+                        <select bind:value={mainType} id="mainType" name="mainType" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
+                            {#each dropdowns["mainType"] as category}
+                                {#if item["mainType"] == category}
+                                <option selected value={category}>{category}</option>
+                                {:else}
+                                <option value={category}>{category}</option>
+                                {/if}
+                            {/each}
+                        </select>
                     </div>
                     <div>
-                        <label for="subType" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sub Type</label>
-                        <input type="text" id="subType" name="subType" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Hat" value={item["subType"]} required>
+                        <label for="subType" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sub Category</label>
+                        <select id="subType" name="subType" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
+                            {#each dropdowns["subType"][mainType] as category}
+                                {#if item["subType"] == category}
+                                <option selected value={category}>{category}</option>
+                                {:else}
+                                <option value={category}>{category}</option>
+                                {/if}
+                            {/each}
+                        </select>
                     </div>
                     <div>
                         <label for="rarity" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Rarity</label>
-                        <input type="text" id="rarity" name="rarity" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Common" value={item["rarity"]} required>
-                    </div>
-                    <div>
-                        <label for="rarityColor" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Rarity Color</label>
-                        <input type="text" id="rarityColor" name="rarityColor" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="#7D7D7F" value={item["rarityColor"]} required>
+                        <select id="rarity" name="rarity" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
+                            {#each dropdowns["rarity"] as category}
+                                {#if item["rarity"] == category}
+                                <option selected value={category}>{category}</option>
+                                {:else}
+                                <option value={category}>{category}</option>
+                                {/if}
+                            {/each}
+                        </select>
                     </div>
                     <div>
                         <label for="imageId" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Image ID</label>
-                        <input type="text" id="imageId" name="imageId" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="assets/images/accessory/0.jpg" value={item["imageId"]} required>
+                        <input type="text" id="imageId" name="imageId" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="assets/images/accessory/0.jpg" bind:value={imageId} required>
+                    </div>
+                    <div>
+                        <img src={imageId} alt={imageId} />
                     </div>
                 </div>
                 <div class="mb-6">
@@ -100,7 +128,7 @@
                     </div>
                     <div>
                         <label for="gemNo" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Gem No</label>
-                        <input type="number" id="gemNo" name="gemNo" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder=0 value={item["gemNo"]} required>
+                        <input type="number" id="gemNo" name="gemNo" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder=0 min=0 max=3 value={item["gemNo"]} required>
                     </div>
                 </div>
 

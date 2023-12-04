@@ -4,7 +4,8 @@
 
     export let data;
 
-    console.log(data);
+    //console.log(data);
+	console.log(data.dropdowns)
 </script>
 
 <div style="padding-top: 100px;">
@@ -29,7 +30,7 @@
 	{/each}
 	-->
 	{#each data.items as item}
-		<ItemButton item={item} />
+		<ItemButton {item} dropdowns={data.dropdowns} />
 	{/each}
 	<div class="pt-5 p-1">
 		<form method="POST" action="?/create" use:enhance>
