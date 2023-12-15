@@ -24,7 +24,7 @@
 
 <button on:click={() => handleToggle()}
     ><img
-        src={item["imageId"]}
+        src={"https://tools.arcaneodyssey.net/"+item["imageId"]}
         alt="{item["name"]} Button"
     /></button
 >
@@ -37,6 +37,15 @@
         if (result.type === 'success') {
             handleToggle();
             toast.success('Successfully updated '+document.getElementById("name").value+'!');
+        }
+
+        if (result.type === 'failure') {
+            if (result["data"] !== undefined && result["data"]["error"] !== undefined) {
+                toast.error("Error: "+result["data"]["error"]);
+            } else {
+                toast.error("Error: Unknown");
+            }
+            
         }
     };
 }}>
@@ -118,7 +127,7 @@
                         <input type="text" id="imageId" name="imageId" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="assets/images/accessory/0.jpg" bind:value={imageId} required>
                     </div>
                     <div>
-                        <img src={imageId} alt={imageId} />
+                        <img src={"https://tools.arcaneodyssey.net/"+imageId} alt={imageId} />
                     </div>
                 </div>
                 <div class="mb-6">

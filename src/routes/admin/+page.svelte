@@ -68,7 +68,7 @@
 
 	<div class="pt-5 p-1">
 		<ItemCreateButton item={itemdefault} dropdowns={data.dropdowns} bind:password={pass} id=0 imageIdDefault={itemdefault["imageId"]} />
-		<form method="POST" action="?/create" use:enhance>
+		<!--<form method="POST" action="?/create" use:enhance>
 			<label>
 				Item:
 				<input
@@ -79,6 +79,6 @@
 				<input name="legend" />
 				<input type="submit" value="Add Item">
 			</label>
-		</form>
+		</form>-->
 	</div>
 </div>
