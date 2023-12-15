@@ -43,6 +43,28 @@ export const actions = {
 			return fail(403, { "error":"Password incorrect" });
 		}
         await items.insertOne({"name":data.get('name'), "id":parseInt(data.get('id')), "legend":data.get('legend')});
+
+		/*await items.insertOne({
+			"id":
+			"name" : data.get('name'),
+			"legend" : data.get('legend'),
+			"mainType" : data.get('mainType'),
+			"subType" : data.get('subType'),
+			"rarity" : data.get('rarity'),
+			"rarityColor" : rarity["data"][data.get('rarity')]["color"],
+			"imageId" : data.get('imageId'),
+			"defense" : parseInt(data.get('defense')),
+			"power" : parseInt(data.get('power')),
+			"agility" : parseInt(data.get('agility')),
+			"attackSize" : parseInt(data.get('attackSize')),
+			"attackSpeed" : parseInt(data.get('attackSpeed')),
+			"intensity" : parseInt(data.get('intensity')),
+			"insanity" : parseInt(data.get('insanity')),
+			"drawback" : parseInt(data.get('drawback')),
+			"warding" : parseInt(data.get('warding')),
+			"maxLevel" : parseInt(data.get('maxLevel')),
+			"gemNo" : parseInt(data.get('gemNo')),
+		})*/
 	},
 	update: async ({ request }) => {
 		const [data, rarity] = [await request.formData(), await info.findOne({"id":"rarity"}, {projection: {_id: 0}})];

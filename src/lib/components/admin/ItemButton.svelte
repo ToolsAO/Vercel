@@ -78,6 +78,7 @@
                 <!-- these are for finding the item to edit -->
                 <input type="hidden" id="id" name="id" value={item["id"]} required>
                 <input type="hidden" id="previoustype" name="previoustype" value={item["mainType"]} required>
+                <!-- for auththing user -->
                 <input type="hidden" id="password" name="password" value={password} required>
 
                 <h6 class="mb-1 text-lg font-bold text-gray-900 dark:text-white">Info</h6>
