@@ -19,13 +19,17 @@ export async function GET({ setHeaders, params, url, fetch }) {
         searchTypes = typesList;
     }
 
-    for (let type of types.split(",")) {
-        if (typesList.includes(type.toLowerCase())) {
-            searchTypes.push(type);
+    if (types != "all") {
+        for (let type of types.split(",")) {
+            if (typesList.includes(type.toLowerCase())) {
+                searchTypes.push(type);
+            }
         }
     }
+    
 
-    let query = { $or: []} ;
+
+    let query = { $or: []};
 
     for (let type of searchTypes) {
         query["$or"].push({"mainType":capitalize(type)});
@@ -39,14 +43,10 @@ export async function GET({ setHeaders, params, url, fetch }) {
 
 
     if (list == false) {
-        let tempdata = {
-            "accessory":[],
-            "chestplate":[],
-            "enchant":[],
-            "gem":[],
-            "modifier":[],
-            "pants":[]
-        };
+        let tempdata = {};
+        for (let type of searchTypes) {
+            tempdata[type] = [];
+        }
         for (let item of data) {
             tempdata[item["mainType"].toLowerCase()].push(item);
         }
