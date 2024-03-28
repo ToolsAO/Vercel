@@ -1,7 +1,16 @@
 import { items } from '$db/items.js';
 import { info } from '$db/info.js';
+import { presets } from '$db/presets.js';
 import { password } from '$db/password.js';
 import { error, fail } from '@sveltejs/kit';
+
+async function verifyPassword(data) {
+	let passwordobj = await password.findOne({"password":data.get('password')});
+	if (passwordobj == null || passwordobj["active"] != true) {
+		return fail(403, { "error":"Password incorrect" });
+	}
+	return true;
+}
 
 export async function load({ fetch, setHeaders }) {
 
@@ -38,9 +47,9 @@ export async function load({ fetch, setHeaders }) {
 export const actions = {
 	create: async ({ request }) => {
 		const data = await request.formData();
-		let passwordobj = await password.findOne({"password":data.get('password')});
-		if (passwordobj == null || passwordobj["active"] != true) {
-			return fail(403, { "error":"Password incorrect" });
+		let validPass = await verifyPassword(data);
+		if (validPass != true) {
+			return validPass;
 		}
         await items.insertOne({"name":data.get('name'), "id":parseInt(data.get('id')), "legend":data.get('legend')});
 
@@ -68,14 +77,14 @@ export const actions = {
 	},
 	update: async ({ request }) => {
 		const [data, rarity] = [await request.formData(), await info.findOne({"id":"rarity"}, {projection: {_id: 0}})];
-		let passwordobj = await password.findOne({"password":data.get('password')});
-		if (passwordobj == null || passwordobj["active"] != true) {
-			return fail(403, { "error":"Password incorrect" });
+		let validPass = await verifyPassword(data);
+		if (validPass != true) {
+			return validPass;
 		}
 		await items.updateOne({"$and":[{"id":parseInt(data.get('id'))}, {"mainType":data.get('previoustype')}]}, { $set: {
 			"name" : data.get('name'),
 			"legend" : data.get('legend'),
-			"mainType" : data.get('mainType'),
+			//"mainType" : data.get('mainType'),
 			"subType" : data.get('subType'),
 			"rarity" : data.get('rarity'),
 			"rarityColor" : rarity["data"][data.get('rarity')]["color"],
@@ -95,10 +104,30 @@ export const actions = {
 	},
 	delete: async ({ request }) => {
 		const data = await request.formData();
-		let passwordobj = await password.findOne({"password":data.get('password')});
-		if (passwordobj == null || passwordobj["active"] != true) {
-			return fail(403, { "error":"Password incorrect" });
+		let validPass = await verifyPassword(data);
+		if (validPass != true) {
+			return validPass;
 		}
 		await items.deleteOne({"name":data.get("name")});
-	}
+	},
+	createPreset: async ({ request }) => {
+		const data = await request.formData();
+		let validPass = await verifyPassword(data);
+		if (validPass != true) {
+			return validPass;
+		}
+
+		let highest = await presets.find({}).sort({"id" : -1}).limit(1).toArray();
+		let id = highest[0]["id"] + 1;
+
+        await presets.insertOne({
+			"name":data.get('name'), 
+			"id":id, 
+			"code":data.get('code'),
+			"author":data.get('author'),
+			"description":data.get('description'),
+			"type":data.get('type'),
+			"tags":[],
+		});
+	},
 };

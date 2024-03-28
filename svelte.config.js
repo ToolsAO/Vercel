@@ -10,6 +10,8 @@ const config = {
 		adapter: adapter(),
 		alias: {
 			$db: './src/db',
+			$api: './src/api',
+			$root: './src',
 		}
 	}
 };

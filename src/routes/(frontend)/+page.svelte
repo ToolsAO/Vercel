@@ -1,5 +1,5 @@
 <script>
-	import arcaneIcon_result from '../lib/images/arcaneIcon_result.webp';
+	import arcaneIcon_result from '$lib/images/arcaneIcon_result.webp';
 	import { fly } from 'svelte/transition';
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';

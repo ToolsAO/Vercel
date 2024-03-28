@@ -2,6 +2,7 @@
     import { enhance } from '$app/forms';
 	import ItemButton from '$lib/components/admin/ItemButton.svelte';
 	import ItemCreateButton from '$lib/components/admin/ItemCreateButton.svelte';
+	import PresetCreateButton from '$lib/components/admin/PresetCreateButton.svelte';
 
     export let data;
 
@@ -59,26 +60,17 @@
 			<label for="pass" class="block mb-2 text-sm font-medium text-white dark:text-gray-900">Password</label>
 			<input type="password" id="pass" name="pass" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Password" bind:value={pass}>
 		</div>
-		<div>
+		<!--<div>
 			{#each data.items as item}
 				<ItemButton {item} dropdowns={data.dropdowns} bind:password={pass} />
 			{/each}
-		</div>
+		</div>-->
 	</div>
 
-	<div class="pt-5 p-1">
+	<!--<div class="pt-5 p-1">
 		<ItemCreateButton item={itemdefault} dropdowns={data.dropdowns} bind:password={pass} id=0 imageIdDefault={itemdefault["imageId"]} />
-		<!--<form method="POST" action="?/create" use:enhance>
-			<label>
-				Item:
-				<input
-					name="name"
-					autocomplete="off"
-				/>
-				<input name="id" /> 
-				<input name="legend" />
-				<input type="submit" value="Add Item">
-			</label>
-		</form>-->
+	</div>-->
+	<div class="pt-5 p-1">
+		<PresetCreateButton bind:password={pass} />
 	</div>
 </div>

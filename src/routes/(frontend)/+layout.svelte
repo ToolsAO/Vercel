@@ -1,7 +1,7 @@
 <script>
-	import Header from '../lib/components/Header.svelte';
+	import Header from '$lib/components/Header.svelte';
 	import './styles.css';
-	import '../app.css';
+	import '$root/app.css';
 	import Analytics from '$lib/utils/Analytics.svelte';
 </script>
 
